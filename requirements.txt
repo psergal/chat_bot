@@ -1,0 +1,4 @@
+telegram
+requests==2.22.0
+python-dotenv
+python-telegram-bot[socks]
