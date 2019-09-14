@@ -1,4 +1,4 @@
-telegram
-requests==2.22.0
-python-dotenv
-python-telegram-bot[socks]
+telegram~=0.0.1
+requests~=2.22.0
+python-dotenv~=0.10.1
+python-telegram-bot[socks]~=12.0.0
