@@ -14,30 +14,23 @@ def check_devmn_lesson(devman_token, telegram_token, telegram_chat_id):
         'Connection': 'Keep-Alive',
         'Authorization': devman_token
     }
-    timestamp = 0
-    api = 'https://dvmn.org/api'
-    resp = requests.get(f'{api}/long_polling/', headers=headers)
-    resp.raise_for_status()
-    json_resp = resp.json()
-    print(json_resp.get('timestamp_to_request'))
+    timestamp = None
+    api = 'https://dvmn.org/api/long_polling/'
+    params = {'timestamp': timestamp}
     while True:
-        if json_resp['status'] == 'found':
-            timestamp = json_resp['last_attempt_timestamp']
-            print(json_resp['status'], json_resp['request_query'])
-            print(json_resp['new_attempts'])
-            work_name = json_resp['new_attempts'][0]['lesson_title']
-            work_done = json_resp['new_attempts'][0]['is_negative']
-            rezult_report = 'К сожалению в работе нашлись ошибки' if work_done \
-                else 'Работа принята, можно приступать к слледующему уроку'
-            bot.send_message(chat_id=telegram_chat_id, text=f'У вас проверили работу "{work_name}"')
-            bot.send_message(chat_id=telegram_chat_id, text= rezult_report)
-        elif json_resp['status'] == 'timeout':
-            timestamp = json_resp['timestamp_to_request']
-            print(json_resp['status'], json_resp['request_query'])
         try:
-            resp = requests.get(f'{api}/long_polling/?timestamp={timestamp}', headers=headers)
+            resp = requests.get(api, params=params, headers=headers)
             resp.raise_for_status()
             json_resp = resp.json()
+            if json_resp['status'] == 'found':
+                params.update({'timestamp': json_resp['last_attempt_timestamp']})
+                work_name = json_resp['new_attempts'][0]['lesson_title']
+                work_done = json_resp['new_attempts'][0]['is_negative']
+                rezult_report = 'К сожалению в работе нашлись ошибки' if work_done \
+                    else 'Работа принята, можно приступать к слледующему уроку'
+                bot.send_message(chat_id=telegram_chat_id, text=f'У вас проверили работу "{work_name}"\n{rezult_report}')
+            elif json_resp['status'] == 'timeout':
+                params.update({'timestamp': json_resp['timestamp_to_request']})
         except requests.exceptions.ReadTimeout as e:
             print(f'Catch the timeout error:  {e}')
         except requests.exceptions.ConnectionError as e:
@@ -48,5 +41,5 @@ if __name__ == '__main__':
     load_dotenv()
     dvmn_token = getenv('DVMN_TOKEN')
     tlg_token = getenv('TLG_TOKEN')
-    chat_id = '709528889'
+    chat_id = getenv('TLG_CHAT_ID')
     check_devmn_lesson(dvmn_token, tlg_token, chat_id)
