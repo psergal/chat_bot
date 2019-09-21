@@ -1,6 +1,7 @@
 import requests
-from dotenv import load_dotenv
-from os import getenv
+# from dotenv import load_dotenv
+# from os import getenv
+import os
 import telegram.ext
 
 
@@ -38,8 +39,11 @@ def check_devmn_lesson(devman_token, telegram_token, telegram_chat_id):
 
 
 if __name__ == '__main__':
-    load_dotenv()
-    dvmn_token = getenv('DVMN_TOKEN')
-    tlg_token = getenv('TLG_TOKEN')
-    chat_id = getenv('TLG_CHAT_ID')
+    # load_dotenv()
+    # dvmn_token = getenv('DVMN_TOKEN')
+    dvmn_token = os.environ['DVMN_TOKEN']
+    # tlg_token = getenv('TLG_TOKEN')
+    tlg_token = os.environ['TLG_TOKEN']
+    # chat_id = getenv('TLG_CHAT_ID')
+    chat_id = os.environ['TLG_CHAT_ID']
     check_devmn_lesson(dvmn_token, tlg_token, chat_id)
