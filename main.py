@@ -14,6 +14,7 @@ def check_devmn_lesson(devman_token, telegram_token, telegram_chat_id):
     # handler.format(log_format)
     logger.addHandler(handler)
     bot = telegram.Bot(telegram_token)
+    print("Bot has started")
     logger.info("Bot has started")
     headers = {
         'User-Agent': 'curl',
