@@ -3,11 +3,18 @@ import requests
 # from os import getenv
 import os
 import telegram.ext
-
+import logging
+from logging.handlers import RotatingFileHandler
 
 def check_devmn_lesson(devman_token, telegram_token, telegram_chat_id):
+    log_format = "%(levelname)s %(asctime)s - %(funcName)s - %(message)s"
+    logger = logging.getLogger("Bot logger")
+    logger.setLevel(logging.INFO)
+    handler = RotatingFileHandler("bot.log", maxBytes=200, backupCount=2)
+    handler.format(log_format)
+    logger.addHandler(handler)
     bot = telegram.Bot(telegram_token)
-
+    logger.info("Bot has started")
     headers = {
         'User-Agent': 'curl',
         'Accept': 'application/json',
