@@ -7,15 +7,16 @@ import logging
 from logging.handlers import RotatingFileHandler
 
 def check_devmn_lesson(devman_token, telegram_token, telegram_chat_id):
-    # log_format = "%(levelname)s %(asctime)s - %(funcName)s - %(message)s"
-    logger = logging.getLogger("Bot logger")
-    logger.setLevel(logging.INFO)
+    log_format = "%(levelname)s %(asctime)s - %(funcName)s - %(message)s"
+    logging.basicConfig(format=log_format, level=logging.DEBUG)
+    # logger = logging.getLogger("Bot logger")
+    # logger.setLevel(logging.INFO)
     handler = RotatingFileHandler("bot.log", maxBytes=200, backupCount=2)
     # handler.format(log_format)
-    logger.addHandler(handler)
+    # logger.addHandler(handler)
     bot = telegram.Bot(telegram_token)
-    print("Bot has started")
-    logger.info("Bot has started")
+    # print("Bot has started")
+    logging.info("Bot has started")
     headers = {
         'User-Agent': 'curl',
         'Accept': 'application/json',
