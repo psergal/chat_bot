@@ -20,7 +20,6 @@ class TelegramLogsHandler(logging.Handler):
 def check_devmn_lesson(devman_token, telegram_token, telegram_chat_id):
     log_format = "%(levelname)s %(asctime)s - %(funcName)s - %(message)s"
     logger = logging.getLogger("__name__")
-    logger.setLevel()
     handler = logging.StreamHandler()
     handler.setLevel(logging.INFO)
     formatter = logging.Formatter(log_format)
