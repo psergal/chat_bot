@@ -1,21 +1,37 @@
 import requests
-# from dotenv import load_dotenv
-# from os import getenv
 import os
 import telegram.ext
 import logging
-from logging.handlers import RotatingFileHandler
+
+
+class TelegramLogsHandler(logging.Handler):
+    def __init__(self):
+        super().__init__()
+        tlg_token = os.environ['TLG_TOKEN']
+        chat_id = os.environ['TLG_CHAT_ID']
+        self.telegram_bot = telegram.Bot(tlg_token)
+        self.telegram_bot.send_message(chat_id=chat_id, text='bot has started')
+
+    def emit(self, record):
+        log_entry = self.format(record)
+        self.telegram_bot.send_message(chat_id=chat_id, text=f'{log_entry}')
+
 
 def check_devmn_lesson(devman_token, telegram_token, telegram_chat_id):
     log_format = "%(levelname)s %(asctime)s - %(funcName)s - %(message)s"
-    logging.basicConfig(format=log_format, level=logging.DEBUG)
-    # logger = logging.getLogger("Bot logger")
+    logger = logging.getLogger("__name__")
+    logger.setLevel()
+    handler = logging.StreamHandler()
+    handler.setLevel(logging.INFO)
+    formatter = logging.Formatter(log_format)
+    handler.setFormatter(formatter)
+    tlg_handler = TelegramLogsHandler()
+    tlg_handler.setLevel(logging.INFO)
+    logger.addHandler(handler)
+    logger.addHandler(tlg_handler)
     # logger.setLevel(logging.INFO)
-    handler = RotatingFileHandler("bot.log", maxBytes=200, backupCount=2)
-    # handler.format(log_format)
-    # logger.addHandler(handler)
-    bot = telegram.Bot(telegram_token)
-    # print("Bot has started")
+    # bot = telegram.Bot(telegram_token)
+
     logging.info("Bot has started")
     headers = {
         'User-Agent': 'curl',
@@ -38,7 +54,7 @@ def check_devmn_lesson(devman_token, telegram_token, telegram_chat_id):
                 work_done = json_resp['new_attempts'][0]['is_negative']
                 rezult_report = 'К сожалению в работе нашлись ошибки' if work_done \
                     else 'Работа принята, можно приступать к слледующему уроку'
-                bot.send_message(chat_id=telegram_chat_id, text=f'У вас проверили работу "{work_name}"\n{rezult_report}')
+                # bot.send_message(chat_id=telegram_chat_id, text=f'У вас проверили работу "{work_name}"\n{rezult_report}')
             elif json_resp['status'] == 'timeout':
                 params.update({'timestamp': json_resp['timestamp_to_request']})
         except requests.exceptions.ReadTimeout as e:
@@ -48,11 +64,7 @@ def check_devmn_lesson(devman_token, telegram_token, telegram_chat_id):
 
 
 if __name__ == '__main__':
-    # load_dotenv()
-    # dvmn_token = getenv('DVMN_TOKEN')
     dvmn_token = os.environ['DVMN_TOKEN']
-    # tlg_token = getenv('TLG_TOKEN')
     tlg_token = os.environ['TLG_TOKEN']
-    # chat_id = getenv('TLG_CHAT_ID')
     chat_id = os.environ['TLG_CHAT_ID']
     check_devmn_lesson(dvmn_token, tlg_token, chat_id)
