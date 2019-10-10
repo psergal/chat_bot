@@ -3,6 +3,10 @@ import os
 import telegram.ext
 import logging
 
+# for local debugging
+# from dotenv import load_dotenv
+# from os import getenv
+# import sys
 
 class TelegramLogsHandler(logging.Handler):
     def __init__(self):
@@ -20,7 +24,7 @@ class TelegramLogsHandler(logging.Handler):
 def check_devmn_lesson(devman_token, telegram_token, telegram_chat_id):
     log_format = "%(levelname)s %(asctime)s - %(funcName)s - %(message)s"
     logger = logging.getLogger("__name__")
-    handler = logging.StreamHandler()
+    handler = logging.StreamHandler(sys.stdout)
     handler.setLevel(logging.INFO)
     formatter = logging.Formatter(log_format)
     handler.setFormatter(formatter)
@@ -28,10 +32,8 @@ def check_devmn_lesson(devman_token, telegram_token, telegram_chat_id):
     tlg_handler.setLevel(logging.INFO)
     logger.addHandler(handler)
     logger.addHandler(tlg_handler)
-    # logger.setLevel(logging.INFO)
-    # bot = telegram.Bot(telegram_token)
+    logger.setLevel(logging.INFO)
 
-    logging.info("Bot has started")
     headers = {
         'User-Agent': 'curl',
         'Accept': 'application/json',
@@ -53,16 +55,22 @@ def check_devmn_lesson(devman_token, telegram_token, telegram_chat_id):
                 work_done = json_resp['new_attempts'][0]['is_negative']
                 rezult_report = 'К сожалению в работе нашлись ошибки' if work_done \
                     else 'Работа принята, можно приступать к слледующему уроку'
-                # bot.send_message(chat_id=telegram_chat_id, text=f'У вас проверили работу "{work_name}"\n{rezult_report}')
+                logger.warning(f'У вас проверили работу "{work_name}"\n{rezult_report}')
             elif json_resp['status'] == 'timeout':
                 params.update({'timestamp': json_resp['timestamp_to_request']})
         except requests.exceptions.ReadTimeout as e:
-            print(f'Catch the timeout error:  {e}')
+            logger.error(f'Catch the timeout error:  {e}', exc_info=True)
         except requests.exceptions.ConnectionError as e:
-            print(f'Catch the ConnectionError error:  {e}')
+            logger.error(f'Catch the ConnectionError error:  {e}', exc_info=True)
 
 
 if __name__ == '__main__':
+    # for local debugging
+    # load_dotenv()
+    # dvmn_token = getenv('DVMN_TOKEN')
+    # tlg_token = getenv('TLG_TOKEN')
+    # chat_id = getenv('TLG_CHAT_ID')
+
     dvmn_token = os.environ['DVMN_TOKEN']
     tlg_token = os.environ['TLG_TOKEN']
     chat_id = os.environ['TLG_CHAT_ID']
