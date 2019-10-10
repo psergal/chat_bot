@@ -2,11 +2,12 @@ import requests
 import os
 import telegram.ext
 import logging
+import sys
 
 # for local debugging
 # from dotenv import load_dotenv
 # from os import getenv
-# import sys
+
 
 class TelegramLogsHandler(logging.Handler):
     def __init__(self):
