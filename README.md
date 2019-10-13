@@ -18,7 +18,15 @@ There are four setting for the proper work which has to be set on via `.env` fil
 * `TLG_TOKEN`
 * `HTTPS_PROXY`
 * `TLG_CHAT_ID`   
-Uncomment lines from the comment `for local debugging` and comment lines with `os.environ`     
+Add these lines to the import section  
+`from dotenv import load_dotenv`  
+`from os import getenv`  
+Add these lines of code to the `ifname` section  
+`load_dotenv()`  
+`dvmn_token = getenv('DVMN_TOKEN')`  
+`tlg_token = getenv('TLG_TOKEN')`  
+`chat_id = getenv('TLG_CHAT_ID')`    
+Comment all line with `os.environ` substring
 
 ## Getting started locally
 Put this string to the command line  `python main.py` it launches loop with long poll requests.
@@ -30,10 +38,10 @@ The shortest way to try is when you send a trial lesson to the teacher code revi
 * [Sign up](https://signup.heroku.com/login) by this link.
 * Create your own repo on [Github](https://github.com/).
 * Link your repo with your application.
-* Your repo has to have `procfile` more information [there](https://devcenter.heroku.com/articles/procfile).
- It has to comprise this line `bot: python3 yourfilename.py`
+* Your repo has to have `procfile` more information [there](https://devcenter.heroku.com/articles/procfile).  
+It has to comprise this line `bot: python3 yourfilename.py`. Set up environment variables on the setting Tab
+of  your dashboard in the _Config Var_ Section
   
-
 
 
 ## Project Goals
