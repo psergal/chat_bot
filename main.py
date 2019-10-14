@@ -16,11 +16,10 @@ class TelegramLogsHandler(logging.Handler):
 
     def emit(self, record):
         log_entry = self.format(record)
-        if isinstance(record.exc_info, tuple) and record.exc_info[0] != requests.exceptions.ConnectionError:
-            self.telegram_bot.send_message(chat_id=self.telegram_chat_id, text=f'{log_entry}')
-        else:
+        if isinstance(record.exc_info, tuple) and record.exc_info[0] == requests.exceptions.ConnectionError:
             return
-        self.telegram_bot.send_message(chat_id=self.telegram_chat_id, text=f'{log_entry}')
+        else:
+            self.telegram_bot.send_message(chat_id=self.telegram_chat_id, text=f'{log_entry}')
 
 
 def check_devmn_lesson(devman_token, telegram_token, telegram_chat_id):
