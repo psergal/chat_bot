@@ -5,17 +5,22 @@ import logging
 import sys
 import time
 
+
 class TelegramLogsHandler(logging.Handler):
-    def __init__(self):
+    def __init__(self, telegram_token, telegram_chat_id):
         super().__init__()
-        tlg_token = os.environ['TLG_TOKEN']
-        chat_id = os.environ['TLG_CHAT_ID']
-        self.telegram_bot = telegram.Bot(tlg_token)
-        self.telegram_bot.send_message(chat_id=chat_id, text='bot has started')
+        self.telegram_token = telegram_token
+        self.telegram_chat_id = telegram_chat_id
+        self.telegram_bot = telegram.Bot(self.telegram_token)
+        self.telegram_bot.send_message(chat_id=self.telegram_chat_id, text=f'bot has started at {time.ctime()}')
 
     def emit(self, record):
         log_entry = self.format(record)
-        self.telegram_bot.send_message(chat_id=chat_id, text=f'{log_entry}')
+        if isinstance(record.exc_info, tuple) and record.exc_info[0] != requests.exceptions.ConnectionError:
+            self.telegram_bot.send_message(chat_id=self.telegram_chat_id, text=f'{log_entry}')
+        else:
+            return
+        self.telegram_bot.send_message(chat_id=self.telegram_chat_id, text=f'{log_entry}')
 
 
 def check_devmn_lesson(devman_token, telegram_token, telegram_chat_id):
@@ -25,7 +30,7 @@ def check_devmn_lesson(devman_token, telegram_token, telegram_chat_id):
     handler.setLevel(logging.INFO)
     formatter = logging.Formatter(log_format)
     handler.setFormatter(formatter)
-    tlg_handler = TelegramLogsHandler()
+    tlg_handler = TelegramLogsHandler(telegram_token, telegram_chat_id)
     tlg_handler.setLevel(logging.INFO)
     logger.addHandler(handler)
     logger.addHandler(tlg_handler)
