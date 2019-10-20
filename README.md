@@ -41,6 +41,9 @@ The shortest way to try is when you send a trial lesson to the teacher code revi
 * Your repo has to have `procfile` more information [there](https://devcenter.heroku.com/articles/procfile).  
 It has to comprise this line `bot: python3 yourfilename.py`. Set up environment variables on the setting Tab
 of  your dashboard in the _Config Var_ Section
+If your acquire a free heroku account it makes sense to stop your bot if it's not needed. You can do it by executing
+command:  
+`heroku ps:stop DYNO -a pserga-app`. Your  
   
 
 
